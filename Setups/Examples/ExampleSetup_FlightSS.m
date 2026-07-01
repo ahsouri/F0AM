@@ -9,11 +9,12 @@
 %
 % 20200417 GMW  Added SAPRC07B
 % 20251103 GMW  Added CB7 and CRACMM1/2
+% 20260701 AHS  Added CRI2
 
 if length(dbstack)==1 %only execute if top-level (skip if called from ExampleSetup_MechCompare.m)
     clear
     
-    MECHANISM = 'CRACMM2';
+    MECHANISM = 'CRI2p2';
     % choices are :
     % MCMv331
     % MCMv32
@@ -26,6 +27,7 @@ if length(dbstack)==1 %only execute if top-level (skip if called from ExampleSet
     % GEOSCHEMv1207
     % CRACMM1
     % CRACMM2
+    % CRI2
     
     makeplots = 1; %flag 0 or 1 for making plots after run
 end
@@ -86,7 +88,7 @@ jcorr is a scaling factor for non-observed photolysis frequencies. In this case,
 
 %choose J-value constraint names for specific mechanism
 switch MECHANISM
-    case {'MCMv331','MCMv32'}
+    case {'MCMv331','MCMv32','CRI2p2'}
         nJNO2 = 'J4'; 
         nJO3 = 'J1';
     case {'CB05','CB6r2','CB7','RACM2','GEOSCHEMv902','GEOSCHEMv1207'}
@@ -148,7 +150,7 @@ InitConc = {...
 %change names if needed
 % methanol, isoprene, formaldehyde
 switch MECHANISM
-    case {'MCMv331','MCMv32'} %default
+    case {'MCMv331','MCMv32','CRI2p2'} %default
     case {'CB05','CB6r2','CB7'}
         InitConc(8:10,1) = {'MEOH','ISOP','FORM'};
     case {'RACM2','CRACMM1','CRACMM2'}
@@ -184,6 +186,12 @@ switch MECHANISM
             'MCMv32_K(Met)';...
             'MCMv32_J(Met,2)';...
             'MCMv32_Inorg_Isoprene'};
+
+    case 'CRI2p2'
+        ChemFiles = {...
+            'CRI2p2_K(Met)';...
+            'CRI2p2_J(Met,2)';...
+            'CRI2p2_AllRxns'};
 
     case 'CB05'
         ChemFiles = {...
@@ -294,6 +302,13 @@ switch MECHANISM
         nISOPO2 = 'ISOPBO2'; %just pick one
         nANs    = {'ANs','ISOPANO3','ISOPBNO3','ISOPCNO3','ISOPDNO3','MVKNO3','MACRNB','MACRNO3'}; %isopene subset
         nNOy    = {{'NOx','NO','NO2'},'PAN',nANs,'HNO3'}; %note, not complete
+        nOH     = 'OH';
+    case {'CRI2p2'}
+        nHCHO   = 'HCHO';
+        nCH3O2  = 'CH3O2';
+        nISOPO2 = 'RU14O2'; %CRI2 lumps MCM ISOPAO2/ISOPBO2/ISOPCO2/ISOPDO2 into RU14O2.
+        nANs    = {'RU14NO3','RU12NO3','RU10NO3'};
+        nNOy    = {{'NOx','NO','NO2'},'PAN',nANs,'HNO3'};
         nOH     = 'OH';
     case {'CB05'}
         nHCHO   = 'FORM';
